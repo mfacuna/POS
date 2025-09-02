@@ -21,11 +21,18 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+
+  async create(createProductDto: CreateProductDto | CreateProductDto[]) {
     try {
-      const product = this.productRepository.create(createProductDto);
-      await this.productRepository.save(product);
-      return product;
+      if (Array.isArray(createProductDto)){
+        const products = createProductDto.map(dto => this.productRepository.create(dto));
+        await this.productRepository.save(products);
+        return products;
+      }else{
+        const product = this.productRepository.create(createProductDto);
+        await this.productRepository.save(product);
+        return product;
+      }
     } catch (error) {
       this.handleDBExceptions(error);
     }

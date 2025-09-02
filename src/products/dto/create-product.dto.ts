@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsIn,
@@ -7,8 +8,9 @@ import {
   IsPositive,
   IsString,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
-import { BeforeInsert } from 'typeorm';
+
 
 export class CreateProductDto {
   @IsString()
@@ -41,4 +43,10 @@ export class CreateProductDto {
   @IsIn(['men', 'women', 'kid', 'unisex'])
   @IsOptional()
   gender?: string;
+}
+
+export class CreateProductArrayDto {
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductDto)
+  products: CreateProductDto[];
 }
