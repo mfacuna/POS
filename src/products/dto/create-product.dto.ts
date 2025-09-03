@@ -11,7 +11,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-
 export class CreateProductDto {
   @IsString()
   @MinLength(1)

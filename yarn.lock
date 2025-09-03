@@ -1222,6 +1222,11 @@
     "@typescript-eslint/types" "8.41.0"
     eslint-visitor-keys "^4.2.1"
 
+"@urbanzoo/remove-accents@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@urbanzoo/remove-accents/-/remove-accents-1.0.2.tgz"
+  integrity sha512-dn3mywFUFhILhSNoa2XW59UD7oSwJ5TydNUBKhisA9tUs69iq+fQb0zrL/zUwUjZuQ/jfqD+pDMvrLfHGp6gWA==
+
 "@webassemblyjs/ast@^1.14.1", "@webassemblyjs/ast@1.14.1":
   version "1.14.1"
   resolved "https://registry.npmjs.org/@webassemblyjs/ast/-/ast-1.14.1.tgz"

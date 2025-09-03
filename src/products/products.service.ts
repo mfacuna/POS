@@ -11,7 +11,7 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class ProductsService {
@@ -22,14 +22,15 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-
   async create(createProductDto: CreateProductDto | CreateProductDto[]) {
     try {
-      if (Array.isArray(createProductDto)){
-        const products = createProductDto.map(dto => this.productRepository.create(dto));
+      if (Array.isArray(createProductDto)) {
+        const products = createProductDto.map((dto) =>
+          this.productRepository.create(dto),
+        );
         await this.productRepository.save(products);
         return products;
-      }else{
+      } else {
         const product = this.productRepository.create(createProductDto);
         await this.productRepository.save(product);
         return product;
@@ -48,28 +49,35 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: string) {
-      const product = await this.productRepository.findOneBy({ id });
-      if (!product) throw new NotFoundException(`Product with ID ${id} not found`);
+  //TODO find for uuid or slug
+  async findOne(term: string) {
+    //Validar si es uuid o slug
+    if (isUUID(term)) {
+      const product = await this.productRepository.findOneBy({ id: term });
+      if (!product)
+        throw new NotFoundException(`Product with ID ${term} not found`);
       return product;
+    } else {
+      const product = await this.productRepository.findOneBy({ slug: term });
+      if (!product)
+        throw new NotFoundException(`Product with slug ${term} not found`);
+      return product;
+    }
   }
-
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.findOne(id);
-    if (!product) throw new NotFoundException(`Product with ID ${id} not found`);
+    if (!product)
+      throw new NotFoundException(`Product with ID ${id} not found`);
     this.productRepository.merge(product, updateProductDto);
     await this.productRepository.save(product);
     return this.findOne(id);
   }
 
-  
   async remove(id: string) {
     const product = await this.findOne(id);
     await this.productRepository.remove(product);
   }
-
-
 
   private handleDBExceptions(error: any) {
     if (error.code === '23505') {
@@ -77,6 +85,8 @@ export class ProductsService {
       throw new BadRequestException(error.detail);
     }
     this.logger.error(error);
-    throw new InternalServerErrorException('Unexpected error, check server logs');
+    throw new InternalServerErrorException(
+      'Unexpected error, check server logs',
+    );
   }
 }
